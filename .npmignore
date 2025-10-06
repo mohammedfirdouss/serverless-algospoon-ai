@@ -1,0 +1,10 @@
+# Exclude from npm package
+*.ts
+!*.d.ts
+
+# CDK
+.cdk.staging
+cdk.out
+
+# Source files
+tsconfig.json
