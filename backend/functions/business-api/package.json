@@ -1,0 +1,20 @@
+{
+  "name": "algospoon-business-api",
+  "version": "1.0.0",
+  "description": "AlgoSpoon Business API for meal plan management",
+  "main": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@aws-sdk/client-eventbridge": "^3.600.0",
+    "@aws-sdk/client-dynamodb": "^3.600.0",
+    "@aws-sdk/lib-dynamodb": "^3.600.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.140",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
