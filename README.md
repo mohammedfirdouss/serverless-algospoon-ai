@@ -15,7 +15,7 @@ Built on a robust, serverless architecture derived from the **AWS AI Stack**, th
 
 ## ✨ Features
 
-### 🍳 Real-Time Recipe Generation (Phase 2)
+### 🍳 Real-Time Recipe Generation
 - **Intelligent Prompting**: Context-aware system prompts that include user's dietary restrictions and allergies
 - **Structured Output**: Recipes returned in consistent JSON format with:
   - Ingredient lists with quantities
@@ -29,7 +29,7 @@ Built on a robust, serverless architecture derived from the **AWS AI Stack**, th
   - Cuisine preferences
   - Skill level and cooking time
 
-### 📅 Asynchronous Meal Planning (Phase 3)
+### 📅 Asynchronous Meal Planning
 - **Multi-Day Plans**: Generate complete 1-30 day meal plans
 - **Event-Driven Architecture**: Uses EventBridge for scalable async processing
 - **Dietary Goals**: Optimize for weight loss, muscle gain, low-carb, etc.
