@@ -17,7 +17,7 @@ All five phases of the project have been successfully implemented:
 **Objective**: Create a recipe generator endpoint that retrieves user context and generates personalized recipes
 
 **Implementation**:
-- ✅ **AI Chat API Lambda** (`backend/functions/ai-chat-api/index.ts`)
+- ✅ **Recipe Generator Lambda** (`backend/functions/recipe-generator/index.ts`)
   - Receives ingredient lists from users
   - Queries DynamoDB AuthTable for user's dietary restrictions and allergies
   - Constructs sophisticated system prompt with "Professional Chef/Dietitian" persona
@@ -35,13 +35,13 @@ All five phases of the project have been successfully implemented:
 **Objective**: Implement event-driven architecture for complex multi-day meal plan generation
 
 **Implementation**:
-- ✅ **Business API Lambda** (`backend/functions/business-api/index.ts`)
+- ✅ **Meal Plans API Lambda** (`backend/functions/meal-plans/index.ts`)
   - Endpoint: `POST /plans/generate`
   - Creates plan record with status "requested"
   - Publishes `plan.generate.requested` event to EventBridge
   - Returns 202 Accepted immediately
 
-- ✅ **Business Worker Lambda** (`backend/functions/business-worker/index.ts`)
+- ✅ **Meal Plan Worker Lambda** (`backend/functions/meal-plan-worker/index.ts`)
   - Subscribes to EventBridge events
   - Performs iterative Bedrock calls for multi-day plans
   - Generates 1-30 day meal plans with balanced nutrition
@@ -99,9 +99,9 @@ All five phases of the project have been successfully implemented:
    - RecipesTable: Recipe storage (with GSI)
 
 2. **Lambda Functions** (5):
-   - ai-chat-api: Recipe generator
-   - business-api: Plan orchestrator
-   - business-worker: Async plan generator
+   - recipe-generator: Recipe generator
+   - meal-plans: Plan orchestrator
+   - meal-plan-worker: Async plan generator
    - profile-get: User profile retrieval
    - profile-update: User profile updates
 
@@ -154,9 +154,9 @@ All five phases of the project have been successfully implemented:
 /workspace/
 ├── backend/
 │   └── functions/
-│       ├── ai-chat-api/          # 450 lines - Recipe generator
-│       ├── business-api/          # 250 lines - Plan orchestrator
-│       └── business-worker/       # 500 lines - Async plan generator
+│       ├── recipe-generator/     # 450 lines - Recipe generator
+│       ├── meal-plans/           # 250 lines - Plan orchestrator
+│       └── meal-plan-worker/     # 500 lines - Async plan generator
 ├── frontend/
 │   └── src/
 │       ├── components/            # 4 major components
@@ -211,7 +211,7 @@ All five phases of the project have been successfully implemented:
 ```
 1. User enters "chicken, broccoli, rice" in React UI
 2. POST /recipes/generate → API Gateway
-3. ai-chat-api Lambda triggered
+3. recipe-generator Lambda triggered
 4. Lambda fetches user profile from DynamoDB
    - Retrieves: allergies=["peanuts"], restrictions=["gluten-free"]
 5. Constructs personalized prompt:
@@ -228,12 +228,12 @@ Total time: ~8 seconds
 ```
 1. User requests 7-day low-carb plan
 2. POST /plans/generate → API Gateway
-3. business-api Lambda creates plan record (status: requested)
+3. meal-plans Lambda creates plan record (status: requested)
 4. Publishes event to EventBridge
 5. Returns planId immediately (202 Accepted)
 
 [Asynchronous Processing]
-6. EventBridge triggers business-worker Lambda
+6. EventBridge triggers meal-plan-worker Lambda
 7. Worker updates status to "generating"
 8. Fetches user profile
 9. Generates comprehensive 7-day plan with Bedrock
@@ -250,10 +250,10 @@ Total time: ~3 minutes
 
 | Endpoint | Method | Lambda | Purpose |
 |----------|--------|--------|---------|
-| `/recipes/generate` | POST | ai-chat-api | Generate single recipe |
-| `/plans/generate` | POST | business-api | Start meal plan generation |
-| `/plans` | GET | business-api | List user's plans |
-| `/plans/{planId}` | GET | business-api | Get plan details |
+| `/recipes/generate` | POST | recipe-generator | Generate single recipe |
+| `/plans/generate` | POST | meal-plans | Start meal plan generation |
+| `/plans` | GET | meal-plans | List user's plans |
+| `/plans/{planId}` | GET | meal-plans | Get plan details |
 | `/profile/{userId}` | GET | profile-get | Get user profile |
 | `/profile/{userId}` | PUT | profile-update | Update profile |
 
@@ -331,7 +331,7 @@ Total time: ~3 minutes
 ```bash
 # 1. Install dependencies
 cd infrastructure && npm install
-cd backend/functions/ai-chat-api && npm install
+cd backend/functions/recipe-generator && npm install
 # ... (repeat for all functions)
 
 # 2. Deploy infrastructure

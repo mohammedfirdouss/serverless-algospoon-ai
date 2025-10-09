@@ -18,9 +18,9 @@ Before you begin, ensure you have:
 /workspace/
 ├── backend/
 │   └── functions/
-│       ├── ai-chat-api/          # Recipe generator Lambda
-│       ├── business-api/          # Meal plan management API
-│       └── business-worker/       # Async meal plan generator
+│       ├── recipe-generator/     # Recipe generator Lambda
+│       ├── meal-plans/           # Meal plan management API
+│       └── meal-plan-worker/     # Async meal plan generator
 ├── frontend/
 │   └── src/
 │       ├── components/            # React components
@@ -43,16 +43,16 @@ Before you begin, ensure you have:
 ### Backend Functions
 
 ```bash
-# AI Chat API
-cd backend/functions/ai-chat-api
+# Recipe Generator
+cd backend/functions/recipe-generator
 npm install
 
-# Business API
-cd ../business-api
+# Meal Plans API
+cd ../meal-plans
 npm install
 
-# Business Worker
-cd ../business-worker
+# Meal Plan Worker
+cd ../meal-plan-worker
 npm install
 ```
 
@@ -85,13 +85,13 @@ Replace `ACCOUNT-NUMBER` and `REGION` with your values.
 
 ```bash
 # From the workspace root
-cd backend/functions/ai-chat-api
+cd backend/functions/recipe-generator
 npm run build
 
-cd ../business-api
+cd ../meal-plans
 npm run build
 
-cd ../business-worker
+cd ../meal-plan-worker
 npm run build
 ```
 
@@ -183,7 +183,7 @@ aws cloudfront list-distributions \
 
 ### Phase 2: Real-Time Recipe Generation
 - **Endpoint**: `POST /recipes/generate`
-- **Lambda**: `ai-chat-api`
+- **Lambda**: `recipe-generator`
 - **Flow**:
   1. User sends ingredients
   2. Lambda retrieves user profile from DynamoDB
@@ -193,12 +193,12 @@ aws cloudfront list-distributions \
 
 ### Phase 3: Asynchronous Meal Planning
 - **Endpoint**: `POST /plans/generate`
-- **Lambda**: `business-api` → EventBridge → `business-worker`
+- **Lambda**: `meal-plans` → EventBridge → `meal-plan-worker`
 - **Flow**:
   1. User requests meal plan
-  2. Business API creates plan record with status "requested"
+  2. Meal Plans API creates plan record with status "requested"
   3. Publishes event to EventBridge
-  4. Business Worker receives event
+  4. Meal Plan Worker receives event
   5. Worker generates multi-day plan with Bedrock
   6. Saves recipes to DynamoDB
   7. Updates plan status to "completed"
@@ -304,7 +304,7 @@ aws dynamodb delete-table --table-name AlgoSpoonRecipesTable
 - Ensure correct region (model must be available in deployment region)
 
 ### Recipe Generation Timeout
-- Increase Lambda timeout (currently 60s for ai-chat-api)
+- Increase Lambda timeout (currently 60s for recipe-generator)
 - Check Bedrock service status
 - Review CloudWatch logs for errors
 

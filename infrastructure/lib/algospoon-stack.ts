@@ -118,7 +118,7 @@ export class AlgoSpoonStack extends cdk.Stack {
       functionName: 'AlgoSpoon-AIChatApi',
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
-      code: lambda.Code.fromAsset('../backend/functions/ai-chat-api'),
+      code: lambda.Code.fromAsset('../backend/functions/recipe-generator'),
       timeout: cdk.Duration.seconds(60),
       memorySize: 1024,
       environment: {
@@ -138,7 +138,7 @@ export class AlgoSpoonStack extends cdk.Stack {
       functionName: 'AlgoSpoon-BusinessApi',
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
-      code: lambda.Code.fromAsset('../backend/functions/business-api'),
+      code: lambda.Code.fromAsset('../backend/functions/meal-plans'),
       timeout: cdk.Duration.seconds(30),
       memorySize: 512,
       environment: {
@@ -159,7 +159,7 @@ export class AlgoSpoonStack extends cdk.Stack {
       functionName: 'AlgoSpoon-BusinessWorker',
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
-      code: lambda.Code.fromAsset('../backend/functions/business-worker'),
+      code: lambda.Code.fromAsset('../backend/functions/meal-plan-worker'),
       timeout: cdk.Duration.minutes(15), // Long timeout for complex meal plan generation
       memorySize: 2048,
       environment: {

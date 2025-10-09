@@ -117,10 +117,10 @@ AlgoSpoon is a serverless, event-driven application that leverages AWS Bedrock's
 
 | Endpoint | Method | Lambda | Purpose |
 |----------|--------|--------|---------|
-| `/recipes/generate` | POST | ai-chat-api | Generate single recipe |
-| `/plans/generate` | POST | business-api | Initiate meal plan generation |
-| `/plans` | GET | business-api | List user's meal plans |
-| `/plans/{planId}` | GET | business-api | Get specific meal plan |
+| `/recipes/generate` | POST | recipe-generator | Generate single recipe |
+| `/plans/generate` | POST | meal-plans | Initiate meal plan generation |
+| `/plans` | GET | meal-plans | List user's meal plans |
+| `/plans/{planId}` | GET | meal-plans | Get specific meal plan |
 | `/profile/{userId}` | GET | profile-get | Get user profile |
 | `/profile/{userId}` | PUT | profile-update | Update user profile |
 
@@ -238,7 +238,7 @@ AlgoSpoon is a serverless, event-driven application that leverages AWS Bedrock's
 ```
 
 **Access Patterns**:
-- Get user profile by userId (ai-chat-api, business-worker)
+- Get user profile by userId (recipe-generator, meal-plan-worker)
 - Update user profile (profile-update)
 
 #### 2. MealPlansTable
@@ -313,7 +313,7 @@ AlgoSpoon is a serverless, event-driven application that leverages AWS Bedrock's
 
 ```json
 {
-  "source": "algospoon.business-api",
+  "source": "algospoon.meal-plans",
   "detail-type": "plan.generate.requested",
   "detail": {
     "planId": "string",
@@ -416,16 +416,16 @@ Frontend Polls GET /plans/{planId}
 
 ### IAM Roles
 
-**ai-chat-api-role**:
+**recipe-generator-role**:
 - `dynamodb:GetItem` on AuthTable
 - `bedrock:InvokeModel` on Claude models
 
-**business-api-role**:
+**meal-plans-role**:
 - `dynamodb:GetItem`, `PutItem`, `Query` on MealPlansTable
 - `dynamodb:Query` on RecipesTable
 - `events:PutEvents` on AlgoSpoonEventBus
 
-**business-worker-role**:
+**meal-plan-worker-role**:
 - `dynamodb:GetItem` on AuthTable
 - `dynamodb:GetItem`, `UpdateItem` on MealPlansTable
 - `dynamodb:BatchWriteItem` on RecipesTable

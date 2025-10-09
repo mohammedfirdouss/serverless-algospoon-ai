@@ -77,9 +77,9 @@ Frontend (React) → API Gateway → Lambda Functions ↔ DynamoDB
 ```
 
 **Key Lambda Functions**:
-1. **ai-chat-api**: Real-time recipe generation with Bedrock streaming
-2. **business-api**: Meal plan orchestration and management
-3. **business-worker**: Asynchronous multi-day meal plan generation
+1. **recipe-generator**: Real-time recipe generation with Bedrock streaming
+2. **meal-plans**: Meal plan orchestration and management
+3. **meal-plan-worker**: Asynchronous multi-day meal plan generation
 
 **DynamoDB Tables**:
 1. **AuthTable**: User profiles with dietary restrictions and allergies
@@ -104,19 +104,19 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed architecture documentation.
 1. **Clone the repository**
 ```bash
 git clone <repository-url>
-cd workspace
+cd serverless-algospoon-ai
 ```
 
 2. **Install backend dependencies**
 ```bash
-# AI Chat API
-cd backend/functions/ai-chat-api && npm install
+# Recipe Generator
+cd backend/functions/recipe-generator && npm install
 
-# Business API
-cd ../business-api && npm install
+# Meal Plans API
+cd ../meal-plans && npm install
 
-# Business Worker
-cd ../business-worker && npm install
+# Meal Plan Worker
+cd ../meal-plan-worker && npm install
 ```
 
 3. **Install infrastructure dependencies**
@@ -155,88 +155,21 @@ aws s3 sync dist/ s3://<bucket-name>/ --delete
 ## 📋 Project Structure
 
 ```
-/workspace/
-├── backend/
-│   └── functions/
-│       ├── ai-chat-api/          # Real-time recipe generator
-│       │   ├── index.ts          # Lambda handler
-│       │   ├── package.json      # Dependencies
-│       │   └── tsconfig.json     # TypeScript config
-│       ├── business-api/          # Meal plan API
-│       │   ├── index.ts
-│       │   ├── package.json
-│       │   └── tsconfig.json
-│       └── business-worker/       # Async meal plan worker
-│           ├── index.ts
-│           ├── package.json
-│           └── tsconfig.json
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── ProfileForm.tsx   # User profile management
-│   │   │   ├── RecipeGenerator.tsx  # Recipe input form
-│   │   │   ├── RecipeDisplay.tsx    # Recipe output display
-│   │   │   └── MealPlanner.tsx      # Meal plan interface
-│   │   ├── services/
-│   │   │   └── api.ts            # API client
-│   │   ├── App.tsx               # Main app component
-│   │   └── main.tsx              # Entry point
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── vite.config.ts
-├── infrastructure/
-│   ├── lib/
-│   │   └── algospoon-stack.ts    # CDK infrastructure
-│   ├── bin/
-│   │   └── app.ts                # CDK app
-│   ├── package.json
-│   ├── cdk.json
-│   └── tsconfig.json
-├── ARCHITECTURE.md                # Architecture documentation
-├── DEPLOYMENT.md                  # Deployment guide
-└── README.md                      # This file
+├── backend/functions/         # Lambda functions
+│   ├── recipe-generator/     # Real-time recipe generator
+│   ├── meal-plans/           # Meal plan API
+│   └── meal-plan-worker/     # Async meal plan worker
+├── frontend/                 # React application
+│   └── src/
+│       ├── components/       # UI components
+│       └── services/         # API client
+├── infrastructure/           # AWS CDK stack
+│   ├── lib/                  # Stack definitions
+│   └── bin/                  # CDK app entry point
+├── ARCHITECTURE.md           # Architecture documentation
+├── DEPLOYMENT.md             # Deployment guide
+└── README.md                 # This file
 ```
-
----
-
-## 🎯 Implementation Phases
-
-### ✅ Phase 1: Foundation (Complete)
-- Project setup and structure
-- Base infrastructure planning
-
-### ✅ Phase 2: Real-Time AI Recipe Chat (Complete)
-- ✅ AI Chat API Lambda function
-- ✅ DynamoDB user profile retrieval
-- ✅ Bedrock integration with Claude 3 Sonnet
-- ✅ Professional Chef/Dietitian system prompt
-- ✅ Structured JSON recipe output
-- ✅ Frontend recipe generator component
-
-### ✅ Phase 3: Asynchronous Meal Planning (Complete)
-- ✅ Business API for plan orchestration
-- ✅ EventBridge event bus setup
-- ✅ Business Worker Lambda for async processing
-- ✅ Multi-day meal plan generation
-- ✅ Recipe storage in DynamoDB
-- ✅ Frontend meal planner interface
-
-### ✅ Phase 4: Frontend Integration (Complete)
-- ✅ React application with TypeScript
-- ✅ Profile management form
-- ✅ Ingredient input form
-- ✅ Structured recipe display
-- ✅ Meal planner UI
-- ✅ Modern CSS styling
-
-### ✅ Phase 5: AWS CDK Infrastructure (Complete)
-- ✅ Complete CDK stack definition
-- ✅ DynamoDB tables with GSIs
-- ✅ Lambda functions with IAM roles
-- ✅ API Gateway REST API
-- ✅ EventBridge configuration
-- ✅ S3 + CloudFront for frontend
-- ✅ Comprehensive documentation
 
 ---
 
@@ -353,29 +286,10 @@ POST /plans/generate
 
 ---
 
-## 💰 Cost Estimation
-
-For moderate usage (1000 users, ~10K recipe generations/month):
-
-| Service | Estimated Cost |
-|---------|---------------|
-| Lambda | $2-5/month |
-| DynamoDB | $3-8/month |
-| AWS Bedrock | $20-40/month |
-| API Gateway | $0.35/month |
-| CloudFront | $1/month |
-| S3 | $0.10/month |
-| **Total** | **~$30-55/month** |
-
-Most costs are pay-per-use, scaling with actual usage.
-
----
-
 ## 📚 Documentation
 
 - **[ARCHITECTURE.md](ARCHITECTURE.md)**: Detailed architecture and design decisions
 - **[DEPLOYMENT.md](DEPLOYMENT.md)**: Step-by-step deployment guide
-- **Code Comments**: Inline documentation in all source files
 
 ---
 
@@ -402,7 +316,7 @@ npm run dev
 
 ```bash
 # Compile backend
-cd backend/functions/ai-chat-api
+cd backend/functions/recipe-generator
 npm run build
 
 # Compile infrastructure
@@ -435,64 +349,10 @@ aws dynamodb get-item \
 
 ---
 
-## 🚧 Future Enhancements
-
-### Planned Features
-- [ ] AWS Cognito authentication
-- [ ] Recipe image generation with Stable Diffusion
-- [ ] Shopping list generation
-- [ ] Recipe ratings and favorites
-- [ ] Social sharing
-- [ ] Nutrition tracking dashboard
-- [ ] Voice interface (Alexa skill)
-- [ ] Mobile app (React Native)
-- [ ] Recipe search with OpenSearch
-- [ ] Multi-language support
-
-### Technical Improvements
-- [ ] Unit and integration tests
-- [ ] CI/CD pipeline with GitHub Actions
-- [ ] Performance optimization with ElastiCache
-- [ ] Multi-region deployment
-- [ ] Enhanced monitoring with X-Ray
-- [ ] Cost optimization with Reserved Capacity
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
-
----
-
 ## 📝 License
 
 This project is licensed under the MIT License.
 
 ---
 
-## 🙏 Acknowledgments
-
-- **AWS AI Stack Template**: Original serverless architecture inspiration
-- **AWS Bedrock Team**: For the amazing Claude 3 integration
-- **Anthropic**: For Claude 3 Sonnet model
-- **AWS CDK Community**: For excellent IaC tooling
-
----
-
-## 📞 Support
-
-For issues, questions, or feature requests:
-- Create an issue in the repository
-- Check [DEPLOYMENT.md](DEPLOYMENT.md) for troubleshooting
-- Review CloudWatch logs for error details
-
----
-
-**Built with ❤️ using AWS Serverless Technologies**
+**Built with AWS Serverless Technologies**
