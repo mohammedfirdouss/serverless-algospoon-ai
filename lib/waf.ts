@@ -19,7 +19,7 @@ export interface WafProps {
    * Enable AWS managed rule sets
    * @default true
    */
-  enableManagedRules?: number;
+  enableManagedRules?: boolean;
 }
 
 export class Waf extends Construct {

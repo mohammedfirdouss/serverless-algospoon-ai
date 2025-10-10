@@ -5,6 +5,7 @@ import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as cloudfront_origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 
 export interface FrontendDeploymentProps {
   /**
@@ -94,17 +95,15 @@ export class FrontendDeployment extends Construct {
       priceClass: cloudfront.PriceClass.PRICE_CLASS_100, // Use only North America and Europe
       enableLogging: true,
       comment: 'AlgoSpoon AI Frontend Distribution',
+      ...(props?.domainName && props?.certificateArn ? {
+        domainNames: [props.domainName],
+        certificate: acm.Certificate.fromCertificateArn(
+          this,
+          'Certificate',
+          props.certificateArn
+        ),
+      } : {}),
     };
-
-    // Add custom domain if provided
-    if (props?.domainName && props?.certificateArn) {
-      distributionConfig.domainNames = [props.domainName];
-      distributionConfig.certificate = cloudfront.Certificate.fromCertificateArn(
-        this,
-        'Certificate',
-        props.certificateArn
-      );
-    }
 
     this.distribution = new cloudfront.Distribution(this, 'Distribution', distributionConfig);
 

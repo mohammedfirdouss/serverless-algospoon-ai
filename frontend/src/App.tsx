@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import ProfileForm from './components/ProfileForm';
 import RecipeGenerator from './components/RecipeGenerator';
 import MealPlanner from './components/MealPlanner';
-import RecipeDisplay from './components/RecipeDisplay';
 import './App.css';
 
 function App() {
@@ -34,7 +32,6 @@ function App() {
                 <Route path="/" element={<RecipeGenerator userId={user?.username || ''} />} />
                 <Route path="/meal-planner" element={<MealPlanner userId={user?.username || ''} />} />
                 <Route path="/profile" element={<ProfileForm userId={user?.username || ''} />} />
-                <Route path="/recipe/:recipeId" element={<RecipeDisplay />} />
               </Routes>
             </main>
 

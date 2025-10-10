@@ -41,7 +41,7 @@ interface Recipe {
   tips?: string[];
 }
 
-const RecipeGenerator: React.FC<RecipeGeneratorProps> = ({ userId }) => {
+const RecipeGenerator: React.FC<RecipeGeneratorProps> = ({ userId: _userId }) => {
   const [ingredients, setIngredients] = useState('');
   const [mealType, setMealType] = useState('');
   const [servings, setServings] = useState(2);
