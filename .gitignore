@@ -74,3 +74,6 @@ cdk.out
 
 # OS
 .DS_Store
+
+# JS source maps
+*.js.map
