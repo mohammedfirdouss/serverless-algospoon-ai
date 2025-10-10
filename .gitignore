@@ -75,5 +75,12 @@ cdk.out
 # OS
 .DS_Store
 
-# JS source maps
+
+# Keep important JS config files
+!vite.config.js
+!*.config.js
+!*.config.cjs
+!*.config.mjs
+
+# Ignore JS source maps
 *.js.map
