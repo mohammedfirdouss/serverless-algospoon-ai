@@ -13,6 +13,7 @@ export interface BedrockServiceProps {
   api: apigateway.RestApi;
   userTable: dynamodb.Table;
   recipeTable: dynamodb.Table;
+  recipesResource: apigateway.Resource;
   authorizer?: apigateway.IAuthorizer;
 }
 
@@ -150,8 +151,8 @@ export class BedrockService extends Construct {
       retryAttempts: 2,
     }));
 
-    // Create API Gateway resources
-    const recipesResource = props.api.root.addResource('recipes');
+    // Create API Gateway resources using passed resource
+    const recipesResource = props.recipesResource;
     const plansResource = props.api.root.addResource('plans');
 
     // POST /recipes/generate - Generate recipe with Bedrock

@@ -74,12 +74,6 @@ export class AlgoSpoonStack extends cdk.Stack {
         userPassword: true,
         userSrp: true,
       },
-      oAuth: {
-        flows: {
-          authorizationCodeGrant: false,
-          implicitCodeGrant: false,
-        },
-      },
       preventUserExistenceErrors: true,
     });
 
@@ -119,6 +113,9 @@ export class AlgoSpoonStack extends cdk.Stack {
       },
     });
 
+    // Create shared API Gateway resources
+    const recipesResource = this.api.root.addResource('recipes');
+
     // Create Auth Service with enhanced user profile
     this.authService = new AuthService(this, 'AuthService', {
       api: this.api,
@@ -128,6 +125,7 @@ export class AlgoSpoonStack extends cdk.Stack {
     this.recipeDataStore = new RecipeDataStore(this, 'RecipeDataStore', {
       api: this.api,
       userTable: this.authService.userTable,
+      recipesResource,
     });
 
     // Create Bedrock Service with AI capabilities
@@ -135,6 +133,7 @@ export class AlgoSpoonStack extends cdk.Stack {
       api: this.api,
       userTable: this.authService.userTable,
       recipeTable: this.recipeDataStore.recipeTable,
+      recipesResource,
       authorizer,
     });
 

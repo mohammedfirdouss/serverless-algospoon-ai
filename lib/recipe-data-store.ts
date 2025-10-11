@@ -9,6 +9,7 @@ import * as path from 'path';
 export interface RecipeDataStoreProps {
   api: apigateway.RestApi;
   userTable: dynamodb.Table;
+  recipesResource: apigateway.Resource;
 }
 
 export class RecipeDataStore extends Construct {
@@ -98,8 +99,8 @@ export class RecipeDataStore extends Construct {
     this.recipeTable.grantReadWriteData(this.deleteRecipeFunction);
     props.userTable.grantReadData(this.saveRecipeFunction);
 
-    // Create API Gateway resources
-    const recipesResource = props.api.root.addResource('recipes');
+    // Create API Gateway resources using passed resource
+    const recipesResource = props.recipesResource;
     
     // POST /recipes - Save a new recipe
     recipesResource.addMethod('POST', new apigateway.LambdaIntegration(this.saveRecipeFunction), {
