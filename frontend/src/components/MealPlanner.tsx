@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { generateMealPlan, fetchMealPlans, fetchMealPlan } from '../services/api';
 import './MealPlanner.css';
-import type { MealPlan, MealPlanDay } from '@shared/types/meal-plan';
+import type { MealPlan, MealPlanDay, MealPlanMeal } from '@shared/types/meal-plan';
+import { getStatusColor, formatDate } from '../utils/formatters';
 
 interface MealPlannerProps {
   userId: string;
@@ -70,133 +71,7 @@ const MealPlanner: React.FC<MealPlannerProps> = ({ userId }) => {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'green';
-      case 'generating': return 'blue';
-      case 'failed': return 'red';
-      default: return 'gray';
-    }
-  };
-
-  return (
-    <div className="meal-planner-container">
-      <div className="planner-header">
-        <h2>📅 AI Meal Planner</h2>
-        <p className="planner-description">
-          Generate a complete multi-day meal plan tailored to your dietary goals and preferences.
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="planner-form">
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="planType">Plan Type</label>
-            <select
-              id="planType"
-              value={planType}
-              onChange={(e) => setPlanType(e.target.value)}
-              className="select-input"
-            >
-              <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
-              <option value="custom">Custom</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="duration">Duration (days)</label>
-            <input
-              id="duration"
-              type="number"
-              min="1"
-              max="30"
-              value={duration}
-              onChange={(e) => setDuration(parseInt(e.target.value))}
-              className="number-input"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="mealsPerDay">Meals per Day</label>
-            <input
-              id="mealsPerDay"
-              type="number"
-              min="1"
-              max="6"
-              value={mealsPerDay}
-              onChange={(e) => setMealsPerDay(parseInt(e.target.value))}
-              className="number-input"
-            />
-          </div>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="dietaryGoal">Dietary Goal</label>
-          <select
-            id="dietaryGoal"
-            value={dietaryGoal}
-            onChange={(e) => setDietaryGoal(e.target.value)}
-            className="select-input"
-          >
-            <option value="">None (Balanced)</option>
-            <option value="weight-loss">Weight Loss</option>
-            <option value="muscle-gain">Muscle Gain</option>
-            <option value="low-carb">Low Carb</option>
-            <option value="high-protein">High Protein</option>
-            <option value="low-fat">Low Fat</option>
-            <option value="heart-healthy">Heart Healthy</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="additionalRequirements">
-            Additional Requirements
-            <span className="field-hint">Optional</span>
-          </label>
-          <textarea
-            id="additionalRequirements"
-            value={additionalRequirements}
-            onChange={(e) => setAdditionalRequirements(e.target.value)}
-            placeholder="e.g., include meal prep instructions, budget-friendly, quick recipes"
-            rows={3}
-            className="textarea-input"
-          />
-        </div>
-
-        {message && (
-          <div className={`message ${message.includes('Failed') ? 'error' : 'success'}`}>
-            {message}
-          </div>
-        )}
-
-        <button type="submit" disabled={loading} className="generate-button">
-          {loading ? '🔄 Starting Generation...' : '✨ Generate Meal Plan'}
-        </button>
-      </form>
-
-      {/* Existing Plans */}
-      <div className="plans-list-section">
-        <h3>Your Meal Plans</h3>
-        {plans.length === 0 ? (
-          <p className="no-plans">No meal plans yet. Generate your first one above!</p>
-        ) : (
-          <div className="plans-grid">
-            {plans.map((plan) => (
-              <div key={plan.planId} className="plan-card">
-                <div className="plan-card-header">
-                  <h4>{plan.planType} Plan</h4>
-                  <span 
-                    className="status-badge"
-                    style={{ backgroundColor: getStatusColor(plan.status) }}
-                  >
-                    {plan.status}
-                  </span>
-                </div>
-                <div className="plan-card-body">
-                  <p><strong>Duration:</strong> {plan.duration} days</p>
-                  {plan.dietaryGoal && <p><strong>Goal:</strong> {plan.dietaryGoal}</p>}
-                  <p><strong>Created:</strong> {new Date(plan.createdAt).toLocaleDateString()}</p>
+                  <p><strong>Created:</strong> {formatDate(plan.createdAt)}</p>
                 </div>
                 {plan.status === 'completed' && (
                   <button
@@ -221,11 +96,11 @@ const MealPlanner: React.FC<MealPlannerProps> = ({ userId }) => {
               <button onClick={() => setSelectedPlan(null)} className="close-button">×</button>
             </div>
             <div className="modal-body">
-              {selectedPlan.recipes.map((day: any, index: number) => (
+              {selectedPlan.recipes.map((day: MealPlanDay, index: number) => (
                 <div key={index} className="day-section">
                   <h4>Day {day.day} - {day.date}</h4>
                   <div className="meals-grid">
-                    {day.meals.map((meal: any, mealIndex: number) => (
+                    {day.meals.map((meal: MealPlanMeal, mealIndex: number) => (
                       <div key={mealIndex} className="meal-card">
                         <h5>{meal.mealType}</h5>
                         <p className="meal-recipe-name">{meal.recipe.recipeName}</p>
