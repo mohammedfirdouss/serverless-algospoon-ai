@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { fetchUserProfile, updateUserProfile } from '../services/api';
+import type { UserProfile } from '../../../shared/types/user';
 import './ProfileForm.css';
 
 interface ProfileFormProps {
   userId: string;
+  onRegister?: (params: {
+    email: string;
+    name: string;
+    password: string;
+    dietaryRestrictions?: string[];
+    allergies?: string[];
+    targetCalories?: number;
+  }) => Promise<any>;
 }
 
-interface UserProfile {
-  userId: string;
-  dietaryRestrictions: string[];
-  allergies: string[];
-  preferences: {
-    cuisineTypes: string[];
-    skillLevel: string;
-    cookingTime: string;
-  };
-}
-
-const ProfileForm: React.FC<ProfileFormProps> = ({ userId }) => {
+const ProfileForm: React.FC<ProfileFormProps> = ({ userId, onRegister }) => {
   const [profile, setProfile] = useState<UserProfile>({
     userId,
+    email: '',
+    name: '',
     dietaryRestrictions: [],
     allergies: [],
     preferences: {
@@ -28,10 +28,12 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userId }) => {
       cookingTime: '30-60 minutes',
     },
   });
+  const [password, setPassword] = useState('');
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [isNewUser, setIsNewUser] = useState(true);
 
   const dietaryOptions = [
     'Vegetarian', 'Vegan', 'Pescatarian', 'Gluten-Free', 'Dairy-Free',
@@ -52,7 +54,18 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userId }) => {
       setLoading(true);
       const data = await fetchUserProfile(userId);
       if (data) {
-        setProfile(data);
+        setProfile((prev) => ({
+          ...prev,
+          ...data,
+          preferences: {
+            cuisineTypes: data.preferences?.cuisineTypes || [],
+            skillLevel: data.preferences?.skillLevel || 'intermediate',
+            cookingTime: data.preferences?.cookingTime || '30-60 minutes',
+          },
+        }));
+        setIsNewUser(false);
+      } else {
+        setIsNewUser(true);
       }
     } catch (error) {
       console.error('Error loading profile:', error);
@@ -62,17 +75,35 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userId }) => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleSave = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setSaving(true);
+    setMessage('');
+
     try {
-      setSaving(true);
-      setMessage('');
-      await updateUserProfile(userId, profile);
-      setMessage('Profile saved successfully! Your preferences will be used for all recipe generations.');
+      if (isNewUser) {
+        if (!onRegister) {
+          throw new Error('Registration handler not provided');
+        }
+        if (!profile.email || !password) {
+          throw new Error('Email and password are required to register');
+        }
+        await onRegister({
+          email: profile.email,
+          name: profile.name || 'New User',
+          password,
+          dietaryRestrictions: profile.dietaryRestrictions,
+          allergies: profile.allergies,
+        });
+        setMessage('Account created successfully!');
+        setIsNewUser(false);
+      }
+
+      await updateUserProfile(profile);
+      setMessage('Profile updated successfully!');
     } catch (error) {
-      console.error('Error saving profile:', error);
-      setMessage('Error saving profile. Please try again.');
+      console.error('Error updating profile:', error);
+      setMessage(error instanceof Error ? error.message : 'Failed to update profile. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -126,7 +157,49 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userId }) => {
         Customize your dietary preferences to receive personalized recipe recommendations.
       </p>
 
-      <form onSubmit={handleSubmit} className="profile-form">
+      <form onSubmit={handleSave} className="profile-form">
+        {/* Name */}
+        <div className="form-row">
+          <label htmlFor="name">Full Name</label>
+          <input
+            id="name"
+            type="text"
+            value={profile.name || ''}
+            onChange={(e) => setProfile(prev => ({ ...prev, name: e.target.value }))}
+            placeholder="e.g., Alex Johnson"
+            className="text-input"
+          />
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              value={profile.email || ''}
+              onChange={(e) => setProfile(prev => ({ ...prev, email: e.target.value }))}
+              placeholder="alex@example.com"
+              className="text-input"
+              disabled={!isNewUser}
+            />
+          </div>
+
+          {isNewUser && (
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Create a secure password"
+                className="text-input"
+              />
+            </div>
+          )}
+        </div>
+
         {/* Dietary Restrictions */}
         <section className="form-section">
           <h3>Dietary Restrictions</h3>

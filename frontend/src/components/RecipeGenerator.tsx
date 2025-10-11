@@ -2,43 +2,10 @@ import React, { useState } from 'react';
 import { generateRecipe } from '../services/api';
 import RecipeDisplay from './RecipeDisplay';
 import './RecipeGenerator.css';
+import type { RecipeDetails } from '../../../shared/types/recipe';
 
 interface RecipeGeneratorProps {
   userId: string;
-}
-
-interface Recipe {
-  recipeName: string;
-  description: string;
-  prepTime: string;
-  cookTime: string;
-  totalTime: string;
-  servings: number;
-  difficulty: string;
-  ingredients: Array<{
-    item: string;
-    quantity: string;
-    notes?: string;
-  }>;
-  instructions: Array<{
-    step: number;
-    instruction: string;
-  }>;
-  nutritionalInfo: {
-    perServing: {
-      calories: number;
-      protein: string;
-      carbohydrates: string;
-      fat: string;
-      fiber: string;
-      sodium: string;
-    };
-  };
-  dietaryCompliance?: {
-    suitable: string[];
-    warnings: string[];
-  };
-  tips?: string[];
 }
 
 const RecipeGenerator: React.FC<RecipeGeneratorProps> = ({ userId: _userId }) => {
@@ -47,7 +14,7 @@ const RecipeGenerator: React.FC<RecipeGeneratorProps> = ({ userId: _userId }) =>
   const [servings, setServings] = useState(2);
   const [additionalNotes, setAdditionalNotes] = useState('');
   const [loading, setLoading] = useState(false);
-  const [recipe, setRecipe] = useState<Recipe | null>(null);
+  const [recipe, setRecipe] = useState<RecipeDetails | null>(null);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {

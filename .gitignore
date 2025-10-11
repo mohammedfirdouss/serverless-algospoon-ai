@@ -9,9 +9,11 @@ yarn.lock
 coverage/
 .nyc_output/
 
-# Production
+# Production builds
 dist/
 build/
+**/dist/
+**/build/
 *.tsbuildinfo
 
 # CDK
@@ -53,10 +55,6 @@ samconfig.toml
 
 # OS
 Thumbs.db
-*.js
-!jest.config.js
-*.d.ts
-node_modules
 
 # CDK asset staging directory
 .cdk.staging
@@ -77,10 +75,19 @@ cdk.out
 
 
 # Keep important JS config files
-!vite.config.js
 !*.config.js
 !*.config.cjs
 !*.config.mjs
 
 # Ignore JS source maps
 *.js.map
+
+# Compiled assets
+scripts/*.log
+
+# Legacy directories
+infrastructure/
+
+# Vite config (TS only)
+!frontend/vite.config.ts
+!eslint.config.js

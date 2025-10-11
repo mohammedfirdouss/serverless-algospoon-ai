@@ -21,7 +21,11 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "rootDir": "./",
+    "outDir": "./dist",
+    "declarationDir": "./dist"
   },
-  "exclude": ["node_modules", "cdk.out", "frontend", "services", "backend"]
+  "include": ["bin/**/*.ts", "lib/**/*.ts"],
+  "exclude": ["node_modules", "dist", "cdk.out", "frontend", "services", "backend"]
 }

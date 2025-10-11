@@ -1,40 +1,9 @@
 import React from 'react';
 import './RecipeDisplay.css';
+import type { RecipeDetails } from '../../../shared/types/recipe';
 
 interface RecipeDisplayProps {
-  recipe: {
-    recipeName: string;
-    description: string;
-    prepTime: string;
-    cookTime: string;
-    totalTime: string;
-    servings: number;
-    difficulty: string;
-    ingredients: Array<{
-      item: string;
-      quantity: string;
-      notes?: string;
-    }>;
-    instructions: Array<{
-      step: number;
-      instruction: string;
-    }>;
-    nutritionalInfo: {
-      perServing: {
-        calories: number;
-        protein: string;
-        carbohydrates: string;
-        fat: string;
-        fiber: string;
-        sodium: string;
-      };
-    };
-    dietaryCompliance?: {
-      suitable: string[];
-      warnings: string[];
-    };
-    tips?: string[];
-  };
+  recipe: RecipeDetails;
 }
 
 const RecipeDisplay: React.FC<RecipeDisplayProps> = ({ recipe }) => {

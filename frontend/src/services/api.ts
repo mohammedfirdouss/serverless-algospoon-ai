@@ -1,4 +1,6 @@
 import axios from 'axios';
+import type { UserProfile } from '../../../shared/types/user';
+import type { MealPlan } from '../../../shared/types/meal-plan';
 
 // Configure API base URL - should be loaded from environment variables
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.algospoon.example.com';
@@ -20,13 +22,25 @@ apiClient.interceptors.request.use((config) => {
 });
 
 // User Profile APIs
-export const fetchUserProfile = async (userId: string) => {
-  const response = await apiClient.get(`/profile/${userId}`);
+export const fetchUserProfile = async (userId: string): Promise<UserProfile | null> => {
+  const response = await apiClient.get<UserProfile | null>(`/auth/profile/${userId}`);
   return response.data;
 };
 
-export const updateUserProfile = async (userId: string, profile: any) => {
-  const response = await apiClient.put(`/profile/${userId}`, profile);
+export const updateUserProfile = async (profile: UserProfile) => {
+  const response = await apiClient.put('/auth/profile', profile);
+  return response.data;
+};
+
+export const registerUser = async (params: {
+  email: string;
+  name: string;
+  password: string;
+  dietaryRestrictions?: string[];
+  allergies?: string[];
+  targetCalories?: number;
+}) => {
+  const response = await apiClient.post('/auth/register', params);
   return response.data;
 };
 
@@ -53,13 +67,13 @@ export const generateMealPlan = async (params: {
   return response.data;
 };
 
-export const fetchMealPlans = async () => {
-  const response = await apiClient.get('/plans');
+export const fetchMealPlans = async (): Promise<{ plans: MealPlan[] }> => {
+  const response = await apiClient.get<{ plans: MealPlan[] }>('/plans');
   return response.data;
 };
 
-export const fetchMealPlan = async (planId: string) => {
-  const response = await apiClient.get(`/plans/${planId}`);
+export const fetchMealPlan = async (planId: string): Promise<{ plan: MealPlan }> => {
+  const response = await apiClient.get<{ plan: MealPlan }>(`/plans/${planId}`);
   return response.data;
 };
 
