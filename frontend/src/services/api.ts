@@ -1,6 +1,6 @@
 import axios from 'axios';
-import type { UserProfile } from '../../../shared/types/user';
-import type { MealPlan } from '../../../shared/types/meal-plan';
+import type { UserProfile } from '@shared/types/user';
+import type { MealPlan } from '@shared/types/meal-plan';
 
 // Configure API base URL - should be loaded from environment variables
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.algospoon.example.com';

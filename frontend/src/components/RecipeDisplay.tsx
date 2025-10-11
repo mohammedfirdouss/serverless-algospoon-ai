@@ -1,6 +1,6 @@
 import React from 'react';
 import './RecipeDisplay.css';
-import type { RecipeDetails } from '../../../shared/types/recipe';
+import type { RecipeDetails } from '@shared/types/recipe';
 
 interface RecipeDisplayProps {
   recipe: RecipeDetails;

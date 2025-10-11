@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { generateRecipe } from '../services/api';
 import RecipeDisplay from './RecipeDisplay';
 import './RecipeGenerator.css';
-import type { RecipeDetails } from '../../../shared/types/recipe';
+import type { RecipeDetails } from '@shared/types/recipe';
 
 interface RecipeGeneratorProps {
   userId: string;

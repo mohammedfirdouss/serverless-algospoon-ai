@@ -2,6 +2,8 @@ import { EventBridgeEvent } from 'aws-lambda';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, GetCommand, UpdateCommand, PutCommand, BatchWriteCommand } from '@aws-sdk/lib-dynamodb';
 import { BedrockRuntimeClient, ConverseStreamCommand } from '@aws-sdk/client-bedrock-runtime';
+import type { MealPlanDay } from '@shared/types/meal-plan';
+import type { UserProfile } from '@shared/types/user';
 
 const dynamoClient = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
@@ -21,26 +23,6 @@ interface PlanGenerateRequestedEvent {
   duration: number;
   mealsPerDay: number;
   additionalRequirements?: string;
-}
-
-interface UserProfile {
-  userId: string;
-  dietaryRestrictions?: string[];
-  allergies?: string[];
-  preferences?: {
-    cuisineTypes?: string[];
-    skillLevel?: string;
-    cookingTime?: string;
-  };
-}
-
-interface DayMealPlan {
-  day: number;
-  date: string;
-  meals: {
-    mealType: string;
-    recipe: any;
-  }[];
 }
 
 /**

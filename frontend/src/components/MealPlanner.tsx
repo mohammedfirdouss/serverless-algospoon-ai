@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { generateMealPlan, fetchMealPlans, fetchMealPlan } from '../services/api';
 import './MealPlanner.css';
-import type { MealPlan, MealPlanDay } from '../../../shared/types/meal-plan';
+import type { MealPlan, MealPlanDay } from '@shared/types/meal-plan';
 
 interface MealPlannerProps {
   userId: string;

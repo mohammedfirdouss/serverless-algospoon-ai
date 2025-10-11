@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fetchUserProfile, updateUserProfile } from '../services/api';
-import type { UserProfile } from '../../../shared/types/user';
+import type { UserProfile } from '@shared/types/user';
 import './ProfileForm.css';
 
 interface ProfileFormProps {

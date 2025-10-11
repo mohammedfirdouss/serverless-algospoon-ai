@@ -2,24 +2,14 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
 import { BedrockRuntimeClient, ConverseStreamCommand } from '@aws-sdk/client-bedrock-runtime';
+import type { UserProfile } from '@shared/types/user';
 
 const dynamoClient = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
 const bedrockClient = new BedrockRuntimeClient({ region: process.env.AWS_REGION || 'us-east-1' });
 
-const AUTH_TABLE_NAME = process.env.AUTH_TABLE_NAME || 'AlgoSpoonAuthTable';
+const AUTH_TABLE_NAME = process.env.AUTH_TABLE_NAME || process.env.USER_TABLE_NAME || 'AlgoSpoonUsers';
 const BEDROCK_MODEL_ID = process.env.BEDROCK_MODEL_ID || 'anthropic.claude-3-sonnet-20240229-v1:0';
-
-interface UserProfile {
-  userId: string;
-  dietaryRestrictions?: string[];
-  allergies?: string[];
-  preferences?: {
-    cuisineTypes?: string[];
-    skillLevel?: string;
-    cookingTime?: string;
-  };
-}
 
 interface RecipeRequest {
   ingredients: string;

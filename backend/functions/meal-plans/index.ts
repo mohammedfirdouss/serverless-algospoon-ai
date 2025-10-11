@@ -2,6 +2,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { EventBridgeClient, PutEventsCommand } from '@aws-sdk/client-eventbridge';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, PutCommand, GetCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import type { MealPlan, MealPlanStatus } from '@shared/types/meal-plan';
 
 const eventBridgeClient = new EventBridgeClient({});
 const dynamoClient = new DynamoDBClient({});
@@ -18,20 +19,6 @@ interface MealPlanRequest {
   duration?: number; // days
   mealsPerDay?: number; // default 3
   additionalRequirements?: string;
-}
-
-interface MealPlan {
-  planId: string;
-  userId: string;
-  planType: string;
-  status: 'requested' | 'generating' | 'completed' | 'failed';
-  createdAt: string;
-  updatedAt: string;
-  startDate?: string;
-  duration?: number;
-  dietaryGoal?: string;
-  recipes?: any[];
-  error?: string;
 }
 
 /**
