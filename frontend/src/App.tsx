@@ -1,10 +1,21 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
-import ProfileForm from './components/ProfileForm';
-import RecipeGenerator from './components/RecipeGenerator';
-import MealPlanner from './components/MealPlanner';
+import React, { Suspense, lazy } from 'react';
 import './App.css';
+
+// Lazy load components for code splitting
+const ProfileForm = lazy(() => import('./components/ProfileForm'));
+const RecipeGenerator = lazy(() => import('./components/RecipeGenerator'));
+const MealPlanner = lazy(() => import('./components/MealPlanner'));
+
+// Loading component for Suspense fallback
+const LoadingSpinner = () => (
+  <div className="loading-spinner">
+    <div className="spinner"></div>
+    <p>Loading...</p>
+  </div>
+);
 
 function App() {
   return (
@@ -28,11 +39,13 @@ function App() {
             </header>
 
             <main className="app-main">
-              <Routes>
-                <Route path="/" element={<RecipeGenerator userId={user?.username || ''} />} />
-                <Route path="/meal-planner" element={<MealPlanner userId={user?.username || ''} />} />
-                <Route path="/profile" element={<ProfileForm userId={user?.username || ''} />} />
-              </Routes>
+              <Suspense fallback={<LoadingSpinner />}>
+                <Routes>
+                  <Route path="/" element={<RecipeGenerator userId={user?.username || ''} />} />
+                  <Route path="/meal-planner" element={<MealPlanner userId={user?.username || ''} />} />
+                  <Route path="/profile" element={<ProfileForm userId={user?.username || ''} />} />
+                </Routes>
+              </Suspense>
             </main>
 
             <footer className="app-footer">

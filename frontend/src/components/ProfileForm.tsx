@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { fetchUserProfile, updateUserProfile, registerUser } from '../services/api';
+import { Button } from './ui/Button';
 import type { UserProfile } from '../services/api';
 import './ProfileForm.css';
 
@@ -27,15 +29,38 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userId, onRegister }) => {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [isNewUser, setIsNewUser] = useState(true);
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 4;
 
   const dietaryOptions = [
-    'vegetarian', 'vegan', 'pescatarian', 'gluten-free', 'dairy-free',
-    'keto', 'paleo', 'low-carb', 'low-fat', 'halal', 'kosher'
+    { id: 'vegetarian', label: 'Vegetarian', emoji: '🥬', description: 'No meat, fish, or poultry' },
+    { id: 'vegan', label: 'Vegan', emoji: '🌱', description: 'No animal products' },
+    { id: 'pescatarian', label: 'Pescatarian', emoji: '🐟', description: 'Fish but no meat' },
+    { id: 'gluten-free', label: 'Gluten-Free', emoji: '🌾', description: 'No wheat, barley, or rye' },
+    { id: 'dairy-free', label: 'Dairy-Free', emoji: '🥛', description: 'No milk products' },
+    { id: 'keto', label: 'Ketogenic', emoji: '🥑', description: 'High fat, very low carb' },
+    { id: 'paleo', label: 'Paleo', emoji: '🦣', description: 'Stone age diet' },
+    { id: 'low-carb', label: 'Low Carb', emoji: '🥩', description: 'Reduced carbohydrates' },
   ];
 
   const cuisineOptions = [
-    'italian', 'mexican', 'chinese', 'japanese', 'indian', 'thai',
-    'mediterranean', 'french', 'american', 'korean', 'vietnamese'
+    { id: 'italian', label: 'Italian', emoji: '🍝', flag: '🇮🇹' },
+    { id: 'mexican', label: 'Mexican', emoji: '🌮', flag: '🇲🇽' },
+    { id: 'chinese', label: 'Chinese', emoji: '🥢', flag: '🇨🇳' },
+    { id: 'japanese', label: 'Japanese', emoji: '🍣', flag: '🇯🇵' },
+    { id: 'indian', label: 'Indian', emoji: '🍛', flag: '🇮🇳' },
+    { id: 'thai', label: 'Thai', emoji: '🍜', flag: '🇹🇭' },
+    { id: 'mediterranean', label: 'Mediterranean', emoji: '🫒', flag: '🇬🇷' },
+    { id: 'french', label: 'French', emoji: '🥖', flag: '🇫🇷' },
+    { id: 'american', label: 'American', emoji: '🍔', flag: '🇺🇸' },
+    { id: 'korean', label: 'Korean', emoji: '🥢', flag: '🇰🇷' },
+  ];
+
+  const skillLevels = [
+    { id: 'beginner', label: 'Beginner', emoji: '👶', description: 'Just starting my culinary journey' },
+    { id: 'intermediate', label: 'Intermediate', emoji: '👨‍🍳', description: 'Comfortable with basic techniques' },
+    { id: 'advanced', label: 'Advanced', emoji: '🧑‍🍳', description: 'Skilled home cook' },
+    { id: 'expert', label: 'Expert', emoji: '👨‍💼', description: 'Professional-level skills' },
   ];
 
   useEffect(() => {
@@ -62,8 +87,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userId, onRegister }) => {
     }
   };
 
-  const handleSave = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const handleSave = async () => {
     setSaving(true);
     setMessage('');
 
@@ -139,186 +163,300 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ userId, onRegister }) => {
     }));
   };
 
+  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, totalSteps));
+  const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
+
   if (loading) {
-    return <div className="loading">Loading profile...</div>;
+    return (
+      <div className="profile-loading">
+        <motion.div
+          className="loading-chef"
+          animate={{ rotate: [0, 10, -10, 0] }}
+          transition={{ repeat: Infinity, duration: 2 }}
+        >
+          👨‍🍳
+        </motion.div>
+        <p>Preparing your culinary profile...</p>
+      </div>
+    );
   }
 
   return (
     <div className="profile-form-container">
-      <h2>Your Dietary Profile</h2>
-      <p className="profile-description">
-        Customize your dietary preferences to receive personalized recipe recommendations.
-      </p>
-
-      <form onSubmit={handleSave} className="profile-form">
-        {/* Basic Info */}
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="fullName">Full Name</label>
-            <input
-              id="fullName"
-              type="text"
-              value={profile.fullName}
-              onChange={(e) => setProfile(prev => ({ ...prev, fullName: e.target.value }))}
-              placeholder="e.g., Alex Johnson"
-              className="text-input"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              value={profile.email}
-              onChange={(e) => setProfile(prev => ({ ...prev, email: e.target.value }))}
-              placeholder="alex@example.com"
-              className="text-input"
-              required
-              disabled={!isNewUser}
-            />
-          </div>
-        </div>
-
-        {/* Calories and Meals */}
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="calories">Target Daily Calories</label>
-            <input
-              id="calories"
-              type="number"
-              min="1200"
-              max="4000"
-              value={profile.preferences.targetCalories || 2000}
-              onChange={(e) => setProfile(prev => ({
-                ...prev,
-                preferences: { ...prev.preferences, targetCalories: parseInt(e.target.value) }
-              }))}
-              className="text-input"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="meals">Meals Per Day</label>
-            <select
-              id="meals"
-              value={profile.preferences.mealsPerDay || 3}
-              onChange={(e) => setProfile(prev => ({
-                ...prev,
-                preferences: { ...prev.preferences, mealsPerDay: parseInt(e.target.value) }
-              }))}
-              className="select-input"
-            >
-              <option value={2}>2 meals</option>
-              <option value={3}>3 meals</option>
-              <option value={4}>4 meals</option>
-              <option value={5}>5 meals</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Dietary Restrictions */}
-        <section className="form-section">
-          <h3>Dietary Restrictions</h3>
-          <div className="options-grid">
-            {dietaryOptions.map(option => (
-              <label key={option} className="checkbox-label">
-                <input
-                  type="checkbox"
-                  checked={profile.preferences.dietaryRestrictions.includes(option)}
-                  onChange={() => toggleDietaryRestriction(option)}
-                />
-                <span>{option.charAt(0).toUpperCase() + option.slice(1)}</span>
-              </label>
-            ))}
-          </div>
-        </section>
-
-        {/* Allergies */}
-        <section className="form-section">
-          <h3>Allergies</h3>
-          <p className="section-description">
-            ⚠️ Critical: AI will NEVER include these ingredients in your recipes
-          </p>
-          <div className="allergy-input-group">
-            <input
-              type="text"
-              placeholder="Add an allergy (e.g., peanuts, shellfish)"
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  addAllergy((e.target as HTMLInputElement).value);
-                  (e.target as HTMLInputElement).value = '';
-                }
+      <div className="profile-header">
+        <motion.h1
+          className="profile-title"
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+        >
+          Your Culinary Journey
+        </motion.h1>
+        <p className="profile-subtitle">
+          Tell us about your taste preferences and cooking style so we can create perfect recipes just for you.
+        </p>
+        
+        {/* Progress indicator */}
+        <div className="progress-bar">
+          {Array.from({ length: totalSteps }, (_, i) => (
+            <motion.div
+              key={i}
+              className={`progress-step ${i + 1 <= currentStep ? 'active' : ''}`}
+              initial={false}
+              animate={{
+                scale: i + 1 === currentStep ? 1.2 : 1,
+                backgroundColor: i + 1 <= currentStep ? 'var(--color-saffron-500)' : 'var(--color-charcoal-300)'
               }}
-              className="allergy-input"
             />
-          </div>
-          <div className="allergy-tags">
-            {profile.preferences.allergies.map(allergy => (
-              <span key={allergy} className="allergy-tag">
-                {allergy}
-                <button
-                  type="button"
-                  onClick={() => removeAllergy(allergy)}
-                  className="remove-tag"
-                >
-                  ×
-                </button>
-              </span>
-            ))}
-          </div>
-        </section>
+          ))}
+        </div>
+      </div>
 
-        {/* Preferred Cuisines */}
-        <section className="form-section">
-          <h3>Preferred Cuisines</h3>
-          <div className="options-grid">
-            {cuisineOptions.map(cuisine => (
-              <label key={cuisine} className="checkbox-label">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentStep}
+          initial={{ x: 300, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: -300, opacity: 0 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          className="form-step"
+        >
+          {currentStep === 1 && (
+            <div className="step-content">
+              <h2 className="step-title">👋 Let's get acquainted</h2>
+              <div className="form-grid">
+                <div className="form-group">
+                  <label htmlFor="fullName">Full Name</label>
+                  <input
+                    id="fullName"
+                    type="text"
+                    value={profile.fullName}
+                    onChange={(e) => setProfile(prev => ({ ...prev, fullName: e.target.value }))}
+                    placeholder="Chef Julia Child"
+                    className="form-input"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="email">Email Address</label>
+                  <input
+                    id="email"
+                    type="email"
+                    value={profile.email}
+                    onChange={(e) => setProfile(prev => ({ ...prev, email: e.target.value }))}
+                    placeholder="julia@example.com"
+                    className="form-input"
+                    disabled={!isNewUser}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="calories">Daily Calorie Goal</label>
+                  <div className="calorie-input-group">
+                    <input
+                      id="calories"
+                      type="range"
+                      min="1200"
+                      max="4000"
+                      step="50"
+                      value={profile.preferences.targetCalories || 2000}
+                      onChange={(e) => setProfile(prev => ({
+                        ...prev,
+                        preferences: { ...prev.preferences, targetCalories: parseInt(e.target.value) }
+                      }))}
+                      className="calorie-slider"
+                    />
+                    <span className="calorie-value">{profile.preferences.targetCalories || 2000} cal</span>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="meals">Meals Per Day</label>
+                  <div className="meal-selector">
+                    {[2, 3, 4, 5].map(num => (
+                      <button
+                        key={num}
+                        type="button"
+                        className={`meal-option ${(profile.preferences.mealsPerDay || 3) === num ? 'active' : ''}`}
+                        onClick={() => setProfile(prev => ({
+                          ...prev,
+                          preferences: { ...prev.preferences, mealsPerDay: num }
+                        }))}
+                      >
+                        {num} meals
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {currentStep === 2 && (
+            <div className="step-content">
+              <h2 className="step-title">🥗 Dietary Preferences</h2>
+              <p className="step-description">Select any dietary restrictions or lifestyle choices that apply to you.</p>
+              <div className="options-grid">
+                {dietaryOptions.map(option => (
+                  <motion.button
+                    key={option.id}
+                    type="button"
+                    className={`dietary-option ${profile.preferences.dietaryRestrictions.includes(option.id) ? 'active' : ''}`}
+                    onClick={() => toggleDietaryRestriction(option.id)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <span className="option-emoji">{option.emoji}</span>
+                    <span className="option-label">{option.label}</span>
+                    <span className="option-description">{option.description}</span>
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {currentStep === 3 && (
+            <div className="step-content">
+              <h2 className="step-title">⚠️ Allergies & Restrictions</h2>
+              <p className="step-description">
+                Critical safety information - we'll never include these ingredients in your recipes.
+              </p>
+              
+              <div className="allergy-input-group">
                 <input
-                  type="checkbox"
-                  checked={profile.preferences.cuisinePreferences.includes(cuisine)}
-                  onChange={() => toggleCuisine(cuisine)}
+                  type="text"
+                  placeholder="Type an allergy and press Enter (e.g., peanuts, shellfish)"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      addAllergy((e.target as HTMLInputElement).value);
+                      (e.target as HTMLInputElement).value = '';
+                    }
+                  }}
+                  className="allergy-input"
                 />
-                <span>{cuisine.charAt(0).toUpperCase() + cuisine.slice(1)}</span>
-              </label>
-            ))}
-          </div>
-        </section>
+              </div>
 
-        {/* Cooking Skill Level */}
-        <section className="form-section">
-          <h3>Cooking Skill Level</h3>
-          <select
-            value={profile.preferences.cookingSkill}
-            onChange={(e) => setProfile(prev => ({
-              ...prev,
-              preferences: { 
-                ...prev.preferences, 
-                cookingSkill: e.target.value as 'beginner' | 'intermediate' | 'advanced' | 'expert'
-              }
-            }))}
-            className="select-input"
+              <div className="allergy-tags">
+                <AnimatePresence>
+                  {profile.preferences.allergies.map(allergy => (
+                    <motion.span
+                      key={allergy}
+                      className="allergy-tag"
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      layout
+                    >
+                      🚫 {allergy}
+                      <button
+                        type="button"
+                        onClick={() => removeAllergy(allergy)}
+                        className="remove-tag"
+                      >
+                        ×
+                      </button>
+                    </motion.span>
+                  ))}
+                </AnimatePresence>
+              </div>
+
+              <h3 className="subsection-title">🌍 Favorite Cuisines</h3>
+              <div className="cuisine-grid">
+                {cuisineOptions.map(cuisine => (
+                  <motion.button
+                    key={cuisine.id}
+                    type="button"
+                    className={`cuisine-option ${profile.preferences.cuisinePreferences.includes(cuisine.id) ? 'active' : ''}`}
+                    onClick={() => toggleCuisine(cuisine.id)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <span className="cuisine-flag">{cuisine.flag}</span>
+                    <span className="cuisine-emoji">{cuisine.emoji}</span>
+                    <span className="cuisine-label">{cuisine.label}</span>
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {currentStep === 4 && (
+            <div className="step-content">
+              <h2 className="step-title">👨‍🍳 Cooking Experience</h2>
+              <p className="step-description">This helps us suggest recipes that match your skill level.</p>
+              
+              <div className="skill-selector">
+                {skillLevels.map(skill => (
+                  <motion.button
+                    key={skill.id}
+                    type="button"
+                    className={`skill-option ${profile.preferences.cookingSkill === skill.id ? 'active' : ''}`}
+                    onClick={() => setProfile(prev => ({
+                      ...prev,
+                      preferences: { 
+                        ...prev.preferences, 
+                        cookingSkill: skill.id as 'beginner' | 'intermediate' | 'advanced' | 'expert'
+                      }
+                    }))}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <span className="skill-emoji">{skill.emoji}</span>
+                    <span className="skill-label">{skill.label}</span>
+                    <span className="skill-description">{skill.description}</span>
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+          )}
+        </motion.div>
+      </AnimatePresence>
+
+      <div className="form-actions">
+        {currentStep > 1 && (
+          <Button
+            variant="ghost"
+            onClick={prevStep}
+            leftIcon="←"
           >
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-            <option value="expert">Expert</option>
-          </select>
-        </section>
-
-        {message && (
-          <div className={`message ${message.includes('Error') || message.includes('Failed') ? 'error' : 'success'}`}>
-            {message}
-          </div>
+            Previous
+          </Button>
         )}
 
-        <button type="submit" disabled={saving} className="save-button">
-          {saving ? 'Saving...' : isNewUser ? 'Create Profile' : 'Update Profile'}
-        </button>
-      </form>
+        <div className="action-buttons">
+          {currentStep < totalSteps ? (
+            <Button
+              variant="primary"
+              onClick={nextStep}
+              rightIcon="→"
+            >
+              Continue
+            </Button>
+          ) : (
+            <Button
+              variant="primary"
+              onClick={handleSave}
+              isLoading={saving}
+              leftIcon="💾"
+            >
+              {isNewUser ? 'Create Profile' : 'Update Profile'}
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {message && (
+          <motion.div
+            className={`message ${message.includes('Error') || message.includes('Failed') ? 'error' : 'success'}`}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -20, opacity: 0 }}
+          >
+            {message}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

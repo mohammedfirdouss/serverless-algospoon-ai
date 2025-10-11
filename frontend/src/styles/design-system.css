@@ -1,0 +1,87 @@
+/* AlgoSpoon AI Design System - Culinary Excellence */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* === CULINARY COLOR PALETTE === */
+  --color-saffron-50: #fffdf0;
+  --color-saffron-100: #fff9db;
+  --color-saffron-200: #fff2b8;
+  --color-saffron-300: #ffe685;
+  --color-saffron-400: #ffd52f;
+  --color-saffron-500: #f5b800; /* Primary brand */
+  --color-saffron-600: #e09c00;
+  --color-saffron-700: #b7740f;
+  --color-saffron-800: #945814;
+  --color-saffron-900: #7c4717;
+
+  --color-paprika-50: #fef7f0;
+  --color-paprika-100: #fdead7;
+  --color-paprika-200: #fad1ae;
+  --color-paprika-300: #f6b17a;
+  --color-paprika-400: #f08744;
+  --color-paprika-500: #ec6623;
+  --color-paprika-600: #dd4f19;
+  --color-paprika-700: #b73b18;
+  --color-paprika-800: #92301c;
+  --color-paprika-900: #762a1b;
+
+  --color-charcoal-50: #f9fafb;
+  --color-charcoal-100: #f3f4f6;
+  --color-charcoal-200: #e5e7eb;
+  --color-charcoal-300: #d1d5db;
+  --color-charcoal-400: #9ca3af;
+  --color-charcoal-500: #6b7280;
+  --color-charcoal-600: #4b5563;
+  --color-charcoal-700: #374151;
+  --color-charcoal-800: #1f2937;
+  --color-charcoal-900: #111827;
+
+  --color-herb-50: #f0fdf4;
+  --color-herb-500: #22c55e;
+  --color-herb-600: #16a34a;
+
+  /* === TYPOGRAPHY === */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 2rem;
+  --text-4xl: 2.5rem;
+
+  /* === SPACING === */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* === SHADOWS === */
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  --shadow-base: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --shadow-saffron: 0 10px 25px -5px rgba(245, 184, 0, 0.3);
+
+  /* === BORDER RADIUS === */
+  --radius-sm: 0.25rem;
+  --radius-base: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* === TRANSITIONS === */
+  --transition-fast: 0.15s ease-out;
+  --transition-base: 0.25s ease-out;
+  --transition-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
